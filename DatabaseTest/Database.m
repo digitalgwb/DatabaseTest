@@ -40,7 +40,7 @@
     return self;
 }
 
-- (BOOL)create:(NSString *)dbName
+- (BOOL)create:(NSString *)dbName replace:(BOOL)replace
 {
     char *error;
     
@@ -54,7 +54,7 @@
     BOOL rc = NO;
     BOOL exists = [fileManager fileExistsAtPath:dbFilePath];
     
-    if (exists)
+    if (exists && !replace)
         rc = YES;
     else if ([self open:dbFilePath])
     {

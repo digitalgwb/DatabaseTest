@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "Database.h"
 
 @implementation AppDelegate
 
@@ -14,6 +15,12 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
+    [[Database instance] create:@"database" replace:YES];
+    
+    [[Database instance] close];
+    
+    
+    
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;

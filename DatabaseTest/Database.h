@@ -17,7 +17,7 @@
 
 + (Database *)instance;
 
-- (BOOL)create:(NSString *)dbName;
+- (BOOL)create:(NSString *)dbName replace:(BOOL)replace;
 - (BOOL)open:(NSString *)dbFilePath;
 - (BOOL)close;
 

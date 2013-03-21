@@ -42,8 +42,6 @@
 
 - (BOOL)create:(NSString *)dbName replace:(BOOL)replace
 {
-    char *error;
-    
     // Build the file name and path
     NSString *dbFileName = [NSString stringWithFormat:@"%@.sqlite", dbName];
     NSString *dbFilePath = [documentsDirectory stringByAppendingPathComponent:dbFileName];
@@ -59,18 +57,44 @@
     else if ([self open:dbFilePath])
     {
         // Database was successfully created - now create tables
-        NSString *sql = @"CREATE TABLE IF NOT EXISTS TEST ( KEY INTEGER PRIMARY KEY AUTOINCREMENT );";
-        if (sqlite3_exec(db, [sql UTF8String], NULL, NULL, &error) == SQLITE_OK)
+        
+        rc = [self createPointsTable];
+        
+        if (rc == YES)
         {
-            rc = YES;
-        }
-        else
-        {
-            sqlite3_close(db);
+            [self createTracksTable];
         }
     }
     
     return rc;
+}
+
+- (BOOL)createTracksTable
+{
+    char *error;
+    NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS tracks ( %@, %@, %@ );",
+                     @"key INTEGER PRIMARY KEY AUTOINCREMENT",
+                     @"timestamp DATETIME",
+                     @"description VARCHAR(60)"];
+    
+    return(sqlite3_exec(db, [sql UTF8String], NULL, NULL, &error) == SQLITE_OK);
+}
+
+
+- (BOOL)createPointsTable
+{
+    char *error;
+    NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS points ( %@, %@, %@, %@, %@, %@, %@, %@ );",
+                     @"key INTEGER PRIMARY KEY AUTOINCREMENT",
+                     @"timestamp DATETIME",
+                     @"latitude NUMERIC",
+                     @"longitude NUMERIC",
+                     @"course NUMERIC",
+                     @"speed NUMERIC",
+                     @"altitude NUMERIC",
+                     @"track INTEGER REFERENCES tracks(key)"];
+    
+    return(sqlite3_exec(db, [sql UTF8String], NULL, NULL, &error) == SQLITE_OK);
 }
 
 - (BOOL)open:(NSString *)dbFilePath
